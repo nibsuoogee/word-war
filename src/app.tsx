@@ -51,10 +51,10 @@ export function App() {
 
         <div className="flex items-center gap-4 w-full">
           <Field>
-            <FieldLabel className="justify-end" htmlFor="input-seed">
+            <FieldLabel className="justify-center" htmlFor="input-seed">
               Player count
             </FieldLabel>
-            <div className="flex items-center gap-2 w-full justify-end">
+            <div className="flex items-center gap-2 w-full justify-center">
               <Button
                 onClick={() => changePlayerCount(-1)}
                 variant="outline"
@@ -78,8 +78,10 @@ export function App() {
           </Field>
 
           <Field>
-            <FieldLabel htmlFor="input-seed">Starting position</FieldLabel>
-            <div className="flex items-center gap-2 w-full">
+            <FieldLabel className="justify-center" htmlFor="input-seed">
+              Starting position
+            </FieldLabel>
+            <div className="flex items-center gap-2 w-full justify-center">
               <Button
                 onClick={() => changePlayerPosition(-1)}
                 variant="outline"
