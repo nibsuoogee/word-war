@@ -13,13 +13,24 @@ export function App() {
   const [playerPosition, setPlayerPosition] = useState<number>(0);
   const [deck, setDeck] = useState<Deck>({ cards: [] });
 
+  function mulberry32(seed: number) {
+    return function () {
+      let t = (seed += 0x6d2b79f5);
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  const random = mulberry32(seed);
+
   function handleSeed(seed: number) {
     setSeed(seed);
     createDeck();
   }
 
   function randomizeSeed() {
-    handleSeed(Math.round(Math.random() * 1_000_000));
+    handleSeed(Math.round(random() * 1_000_000));
   }
 
   function changePlayerCount(delta: number) {
@@ -42,7 +53,7 @@ export function App() {
   const symbolValues = symbols.options;
 
   function getRandomSymbol(): Symbols {
-    const index = Math.floor(Math.random() * symbolValues.length);
+    const index = Math.floor(random() * symbolValues.length);
     return symbolValues[index];
   }
 
