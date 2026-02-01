@@ -4,14 +4,33 @@ import "./app.css";
 import { Button } from "./components/ui/button";
 import { Field, FieldLabel } from "./components/ui/field";
 import { Input } from "./components/ui/input";
+import { symbols, type Deck, type Symbols } from "./types";
+import { categories } from "./data/cards";
 
 export function App() {
   const [seed, setSeed] = useState<number>(0);
   const [playerCount, setPlayerCount] = useState<number>(3);
   const [playerPosition, setPlayerPosition] = useState<number>(0);
+  const [deck, setDeck] = useState<Deck>({ cards: [] });
+
+  function mulberry32(seed: number) {
+    return function () {
+      let t = (seed += 0x6d2b79f5);
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  const random = mulberry32(seed);
+
+  function handleSeed(seed: number) {
+    setSeed(seed);
+    createDeck();
+  }
 
   function randomizeSeed() {
-    setSeed(Math.round(Math.random() * 1_000_000));
+    handleSeed(Math.round(random() * 1_000_000));
   }
 
   function changePlayerCount(delta: number) {
@@ -31,17 +50,36 @@ export function App() {
     });
   }
 
+  const symbolValues = symbols.options;
+
+  function getRandomSymbol(): Symbols {
+    const index = Math.floor(random() * symbolValues.length);
+    return symbolValues[index];
+  }
+
+  function createDeck() {
+    const newDeck: Deck = {
+      cards: categories.map((category) => ({
+        category,
+        symbol: getRandomSymbol(),
+      })),
+    };
+
+    setDeck(newDeck);
+  }
+
   return (
     <>
       <div className="flex flex-col items-center gap-4">
         <h1 className="text-2xl">Word War</h1>
 
-        <div className="flex items-end gap-2 w-full">
+        <div className="flex items-end gap-2">
           <Field>
             <FieldLabel htmlFor="input-seed">Game seed</FieldLabel>
             <Input
+              className="max-w-64"
               value={seed}
-              onChange={(e) => setSeed(Number(e.currentTarget.value))}
+              onChange={(e) => handleSeed(Number(e.currentTarget.value))}
               id="input-seed"
               type="number"
               placeholder="1234"
@@ -117,6 +155,13 @@ export function App() {
         <Button className="w-min" variant="outline">
           Start
         </Button>
+
+        {deck.cards.map((card) => (
+          <div>
+            <p>{card.category}</p>
+            <p>{card.symbol}</p>
+          </div>
+        ))}
       </div>
     </>
   );
