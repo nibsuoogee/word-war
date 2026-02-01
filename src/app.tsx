@@ -1,12 +1,31 @@
-import { Dice3 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Dice3 } from "lucide-react";
+import { useState } from "preact/hooks";
 import "./app.css";
 import { Button } from "./components/ui/button";
 import { Field, FieldLabel } from "./components/ui/field";
 import { Input } from "./components/ui/input";
-import { useState } from "preact/hooks";
 
 export function App() {
   const [seed, setSeed] = useState<number>(0);
+  const [playerCount, setPlayerCount] = useState<number>(3);
+  const [playerPosition, setPlayerPosition] = useState<number>(0);
+
+  function changePlayerCount(delta: number) {
+    if (playerCount < 4 && delta < 0) return;
+    if (playerCount > 5 && delta > 0) return;
+    setPlayerCount((prev) => prev + delta);
+
+    // Reset player position
+    setPlayerPosition(0);
+  }
+
+  function changePlayerPosition(delta: number) {
+    setPlayerPosition((prev) => {
+      if (playerCount === 0) return 0; // avoid div-by-zero
+      const next = (prev + delta) % playerCount;
+      return (next + playerCount) % playerCount; // wraps negatives into [0, playerCount-1]
+    });
+  }
 
   return (
     <>
@@ -28,6 +47,60 @@ export function App() {
           <Button variant="outline" size="icon" aria-label="Submit">
             <Dice3 />
           </Button>
+        </div>
+
+        <div className="flex items-center gap-4 w-full">
+          <Field>
+            <FieldLabel className="justify-end" htmlFor="input-seed">
+              Player count
+            </FieldLabel>
+            <div className="flex items-center gap-2 w-full justify-end">
+              <Button
+                onClick={() => changePlayerCount(-1)}
+                variant="outline"
+                size="icon"
+                aria-label="Submit"
+              >
+                <ArrowLeft />
+              </Button>
+
+              <p className="w-4">{playerCount}</p>
+
+              <Button
+                onClick={() => changePlayerCount(1)}
+                variant="outline"
+                size="icon"
+                aria-label="Submit"
+              >
+                <ArrowRight />
+              </Button>
+            </div>
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor="input-seed">Starting position</FieldLabel>
+            <div className="flex items-center gap-2 w-full">
+              <Button
+                onClick={() => changePlayerPosition(-1)}
+                variant="outline"
+                size="icon"
+                aria-label="Submit"
+              >
+                <ArrowLeft />
+              </Button>
+
+              <p className="w-4">{playerPosition + 1}</p>
+
+              <Button
+                onClick={() => changePlayerPosition(1)}
+                variant="outline"
+                size="icon"
+                aria-label="Submit"
+              >
+                <ArrowRight />
+              </Button>
+            </div>
+          </Field>
         </div>
 
         <Button className="w-min" variant="outline">
