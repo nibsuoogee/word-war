@@ -10,6 +10,10 @@ export function App() {
   const [playerCount, setPlayerCount] = useState<number>(3);
   const [playerPosition, setPlayerPosition] = useState<number>(0);
 
+  function randomizeSeed() {
+    setSeed(Math.round(Math.random() * 1_000_000));
+  }
+
   function changePlayerCount(delta: number) {
     if (playerCount < 4 && delta < 0) return;
     if (playerCount > 5 && delta > 0) return;
@@ -44,7 +48,12 @@ export function App() {
             />
           </Field>
 
-          <Button variant="outline" size="icon" aria-label="Submit">
+          <Button
+            onClick={randomizeSeed}
+            variant="outline"
+            size="icon"
+            aria-label="Submit"
+          >
             <Dice3 />
           </Button>
         </div>
