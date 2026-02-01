@@ -1,6 +1,6 @@
 import z from "zod";
 
-const symbols = z.enum([
+export const symbols = z.enum([
   "asterisk",
   "four-dots",
   "hashtag",
@@ -9,6 +9,7 @@ const symbols = z.enum([
   "rectangle",
   "thunder",
 ]);
+export type Symbols = z.infer<typeof symbols>;
 
 const card = z.object({
   category: z.string(),
