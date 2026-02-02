@@ -114,7 +114,7 @@ export function Menu({
           </Button>
         </div>
 
-        <div className="flex items-center gap-4 w-full">
+        <div className="flex items-center max-w-96 gap-4 w-full">
           <Field>
             <FieldLabel className="justify-center" htmlFor="input-seed">
               Player count
