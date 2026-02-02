@@ -1,6 +1,9 @@
 import z from "zod";
 
-export const symbols = z.enum([
+export const page = z.enum(["menu", "game"]);
+export type Page = z.infer<typeof page>;
+
+export const cardSymbol = z.enum([
   "asterisk",
   "four-dots",
   "hashtag",
@@ -9,11 +12,11 @@ export const symbols = z.enum([
   "rectangle",
   "thunder",
 ]);
-export type Symbols = z.infer<typeof symbols>;
+export type CardSymbol = z.infer<typeof cardSymbol>;
 
 const card = z.object({
   category: z.string(),
-  symbol: symbols,
+  cardSymbol: cardSymbol,
 });
 export type Card = z.infer<typeof card>;
 
