@@ -91,4 +91,12 @@ export const categories: string[] = [
   "Household Item",
   "Office Supply",
   "School Subject",
+  "Alcoholic beverage",
+  "Medication",
+  "Book franchise",
+  "Watch brand",
+  "Beach",
+  "Forest",
+  "Species",
+  "Mammal",
 ];
