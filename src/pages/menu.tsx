@@ -1,5 +1,5 @@
 import { ArrowLeft, ArrowRight, Dice3, Swords } from "lucide-react";
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import "../app.css";
 import { Button } from "../components/ui/button";
 import { Field, FieldLabel } from "../components/ui/field";
@@ -8,7 +8,13 @@ import { categories } from "../data/cards";
 import { mulberry32 } from "../lib/random";
 import { cardSymbol, type CardSymbol, type Deck } from "../types";
 
-export function Menu({ startGame }: { startGame: () => void }) {
+export function Menu({
+  startGame,
+  setPlayerDeck,
+}: {
+  startGame: () => void;
+  setPlayerDeck: (deck: Deck) => void;
+}) {
   const [seed, setSeed] = useState<number>(0);
   const [playerCount, setPlayerCount] = useState<number>(3);
   const [playerPosition, setPlayerPosition] = useState<number>(0);
@@ -24,6 +30,22 @@ export function Menu({ startGame }: { startGame: () => void }) {
   function randomizeSeed() {
     handleSeed(Math.round(random() * 1_000_000));
   }
+
+  function createPlayerDeck() {
+    const playerCards = deck.cards.filter(
+      (_, index) => index % playerCount === playerPosition,
+    );
+
+    setPlayerDeck({ cards: playerCards });
+  }
+
+  useEffect(() => {
+    createPlayerDeck();
+  }, [deck, playerCount, playerPosition]);
+
+  useEffect(() => {
+    handleSeed(1);
+  }, []);
 
   function changePlayerCount(delta: number) {
     if (playerCount < 4 && delta < 0) return;
@@ -60,10 +82,14 @@ export function Menu({ startGame }: { startGame: () => void }) {
     setDeck(newDeck);
   }
 
+  function handleStart() {
+    startGame();
+  }
+
   return (
     <>
       <div className="flex flex-col items-center gap-4">
-        <h1 className="text-2xl">Word War</h1>
+        <h1 className="text-3xl">Word War</h1>
 
         <div className="flex items-end gap-2">
           <Field>
@@ -118,7 +144,7 @@ export function Menu({ startGame }: { startGame: () => void }) {
 
           <Field>
             <FieldLabel className="justify-center" htmlFor="input-seed">
-              Starting position
+              Your starting position
             </FieldLabel>
             <div className="flex items-center gap-2 w-full justify-center">
               <Button
@@ -144,16 +170,9 @@ export function Menu({ startGame }: { startGame: () => void }) {
           </Field>
         </div>
 
-        <Button onClick={startGame} className="w-min" variant="outline">
+        <Button onClick={handleStart} className="w-min" variant="outline">
           Start <Swords />
         </Button>
-
-        {deck.cards.map((card) => (
-          <div>
-            <p>{card.category}</p>
-            <p>{card.cardSymbol}</p>
-          </div>
-        ))}
       </div>
     </>
   );
