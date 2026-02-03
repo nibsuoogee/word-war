@@ -8,6 +8,9 @@ import { categories } from "../data/cards";
 import { mulberry32 } from "../lib/random";
 import { cardSymbol, type CardSymbol, type Deck } from "../types";
 
+const MIN_PLAYERS = 3;
+const MAX_PLAYERS = 6;
+
 export function Menu({
   startGame,
   setPlayerDeck,
@@ -104,12 +107,7 @@ export function Menu({
             />
           </Field>
 
-          <Button
-            onClick={randomizeSeed}
-            variant="outline"
-            size="icon"
-            aria-label="Submit"
-          >
+          <Button onClick={randomizeSeed} variant="outline" size="icon">
             <Dice3 />
           </Button>
         </div>
@@ -124,7 +122,7 @@ export function Menu({
                 onClick={() => changePlayerCount(-1)}
                 variant="outline"
                 size="icon"
-                aria-label="Submit"
+                disabled={playerCount === MIN_PLAYERS}
               >
                 <ArrowLeft />
               </Button>
@@ -135,7 +133,7 @@ export function Menu({
                 onClick={() => changePlayerCount(1)}
                 variant="outline"
                 size="icon"
-                aria-label="Submit"
+                disabled={playerCount === MAX_PLAYERS}
               >
                 <ArrowRight />
               </Button>
@@ -151,7 +149,7 @@ export function Menu({
                 onClick={() => changePlayerPosition(-1)}
                 variant="outline"
                 size="icon"
-                aria-label="Submit"
+                disabled={playerPosition === 0}
               >
                 <ArrowLeft />
               </Button>
@@ -162,7 +160,7 @@ export function Menu({
                 onClick={() => changePlayerPosition(1)}
                 variant="outline"
                 size="icon"
-                aria-label="Submit"
+                disabled={playerPosition === playerCount - 1}
               >
                 <ArrowRight />
               </Button>
