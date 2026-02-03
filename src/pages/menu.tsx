@@ -32,7 +32,7 @@ export function Menu({
   }
 
   function randomizeSeed() {
-    handleSeed(Math.round(random() * 899_999 + 100_000));
+    handleSeed(Math.round(Math.random() * 899_999 + 100_000));
   }
 
   useEffect(() => {
