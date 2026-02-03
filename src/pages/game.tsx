@@ -133,7 +133,7 @@ export function Game({
             <div className="flex flex-col gap-2">
               <PlayingCard
                 category={topCard.category}
-                symbol={`./public/symbols/${topCard.cardSymbol}.svg`}
+                symbol={`/symbols/${topCard.cardSymbol}.svg`}
               />
               <div className="flex justify-center w-full">{quitButtons()}</div>
             </div>
