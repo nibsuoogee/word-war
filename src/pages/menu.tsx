@@ -5,11 +5,12 @@ import { Button } from "../components/ui/button";
 import { Field, FieldLabel } from "../components/ui/field";
 import { Input } from "../components/ui/input";
 import { categories } from "../data/cards";
-import { mulberry32 } from "../lib/random";
-import { cardSymbol, type CardSymbol, type Deck } from "../types";
+import { arrayShuffle, mulberry32 } from "../lib/random";
+import { cardSymbol, type Card, type CardSymbol, type Deck } from "../types";
 
 const MIN_PLAYERS = 3;
 const MAX_PLAYERS = 6;
+const SYMBOL_SEED = 1234;
 
 export function Menu({
   startGame,
@@ -18,37 +19,29 @@ export function Menu({
   startGame: () => void;
   setPlayerDeck: (deck: Deck) => void;
 }) {
-  const [seed, setSeed] = useState<number>(0);
+  const [seed, setSeed] = useState<number>(1);
   const [playerCount, setPlayerCount] = useState<number>(3);
   const [playerPosition, setPlayerPosition] = useState<number>(0);
   const [deck, setDeck] = useState<Deck>({ cards: [] });
 
+  const symbolRandom = mulberry32(SYMBOL_SEED);
   const random = mulberry32(seed);
 
   function handleSeed(seed: number) {
     setSeed(seed);
-    createDeck();
   }
 
   function randomizeSeed() {
     handleSeed(Math.round(random() * 1_000_000));
   }
 
-  function createPlayerDeck() {
-    const playerCards = deck.cards.filter(
-      (_, index) => index % playerCount === playerPosition,
-    );
-
-    setPlayerDeck({ cards: playerCards });
-  }
-
-  useEffect(() => {
-    createPlayerDeck();
-  }, [deck, playerCount, playerPosition]);
-
   useEffect(() => {
     handleSeed(1);
   }, []);
+
+  useEffect(() => {
+    createDeck();
+  }, [seed]);
 
   function changePlayerCount(delta: number) {
     if (playerCount < 4 && delta < 0) return;
@@ -69,21 +62,31 @@ export function Menu({
 
   const symbolValues = cardSymbol.options;
 
-  function getRandomSymbol(): CardSymbol {
-    const index = Math.floor(random() * symbolValues.length);
+  function getSymbol(): CardSymbol {
+    const index = Math.floor(symbolRandom() * symbolValues.length);
     return symbolValues[index];
   }
 
   function createDeck() {
-    const newDeck: Deck = {
-      cards: categories.map((category) => ({
-        category,
-        cardSymbol: getRandomSymbol(),
-      })),
-    };
+    const newCards: Card[] = categories.map((category) => ({
+      category,
+      cardSymbol: getSymbol(),
+    }));
 
-    setDeck(newDeck);
+    setDeck({ cards: arrayShuffle(newCards, random) });
   }
+
+  function createPlayerDeck() {
+    const playerCards = deck.cards.filter(
+      (_, index) => index % playerCount === playerPosition,
+    );
+
+    setPlayerDeck({ cards: playerCards });
+  }
+
+  useEffect(() => {
+    createPlayerDeck();
+  }, [deck, playerCount, playerPosition]);
 
   function handleStart() {
     startGame();
@@ -96,20 +99,23 @@ export function Menu({
 
         <div className="flex items-end gap-2">
           <Field>
-            <FieldLabel htmlFor="input-seed">Game seed</FieldLabel>
-            <Input
-              className="max-w-64"
-              value={seed}
-              onChange={(e) => handleSeed(Number(e.currentTarget.value))}
-              id="input-seed"
-              type="number"
-              placeholder="1234"
-            />
+            <FieldLabel className="justify-center" htmlFor="input-seed">
+              Game seed
+            </FieldLabel>
+            <div className="flex items-center gap-2">
+              <Input
+                className="max-w-28"
+                value={seed}
+                onChange={(e) => handleSeed(Number(e.currentTarget.value))}
+                id="input-seed"
+                type="number"
+                placeholder="1234"
+              />
+              <Button onClick={randomizeSeed} variant="outline" size="icon">
+                <Dice3 />
+              </Button>
+            </div>
           </Field>
-
-          <Button onClick={randomizeSeed} variant="outline" size="icon">
-            <Dice3 />
-          </Button>
         </div>
 
         <div className="flex items-center max-w-96 gap-4 w-full">
