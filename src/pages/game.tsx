@@ -5,9 +5,11 @@ import { ArrowDown, ArrowLeft, Play, Trophy, X } from "lucide-react";
 import {
   useEffect,
   useState,
+  useRef,
   type Dispatch,
   type StateUpdater,
 } from "preact/hooks";
+import { onPointerUp, onCardPointerDown, onTopPointerDown, onPointerMove } from "@/utils";
 
 export function Game({
   quit,
@@ -22,8 +24,39 @@ export function Game({
 }) {
   const [quitDialogOpen, setQuitDialogOpen] = useState(false);
   const [topCard, setTopCard] = useState<Card | null>(null);
+  const [drawnCard, setDrawnCard] = useState<Card | null>(null);
   const [virtualDeckEmpty, setVirtualDeckEmpty] = useState<boolean>(false);
   const [physicalDeckEmpty, setPhysicalDeckEmpty] = useState<boolean>(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const [cardDrag, setCardDrag] = useState<{
+    active: boolean;
+    startX: number;
+    startY: number;
+    x: number;
+    y: number;
+  }>({ active: false, startX: 0, startY: 0, x: 0, y: 0 });
+
+  const [spawnDrag, setSpawnDrag] = useState<{
+    active: boolean;
+    startX: number;
+    startY: number;
+    x: number;
+    y: number;
+  }>({ active: false, startX: 0, startY: 0, x: 0, y: 0 });
+
+  useEffect(() => {
+
+    if (cardDrag.active || spawnDrag.active) {
+      window.addEventListener("pointermove", (e) => onPointerMove(e, cardDrag, setCardDrag, spawnDrag, setSpawnDrag));
+      window.addEventListener("pointerup", (e) => onPointerUp(e, cardDrag, setCardDrag, spawnDrag, setSpawnDrag, removeTopCard, addPoint, nextCard, containerRef, setPlayerState));
+    }
+
+    return () => {
+      window.removeEventListener("pointermove", (e) => onPointerMove(e, cardDrag, setCardDrag, spawnDrag, setSpawnDrag));
+      window.removeEventListener("pointerup", (e) => onPointerUp(e, cardDrag, setCardDrag, spawnDrag, setSpawnDrag, removeTopCard, addPoint, nextCard, containerRef, setPlayerState));
+    };
+  }, [cardDrag.active, spawnDrag.active]);
 
   function addPoint() {
     setPlayerState((prev) => ({ ...prev, points: prev.points + 1 }));
@@ -93,6 +126,12 @@ export function Game({
   }, [playerState]);
 
   useEffect(() => {
+    const newDrawnCard = playerDeck.cards[playerState.virtualDeckPosition]
+
+    setDrawnCard(newDrawnCard)
+  }, [playerState.virtualDeckPosition])
+
+  useEffect(() => {
     if (playerState.virtualDeckPosition < playerDeck.cards.length) return;
 
     setVirtualDeckEmpty(true);
@@ -109,7 +148,8 @@ export function Game({
 
   return (
     <>
-      <div className="flex flex-col items-center gap-2 w-min mx-auto">
+      <div ref={containerRef} className="flex flex-col items-center gap-2 w-min mx-auto">
+        <div onPointerDown={(e) => onTopPointerDown(e, setSpawnDrag)} style={{ width: "100%", height: 64, touchAction: "none" }} />
         <Button
           onClick={nextCard}
           disabled={virtualDeckEmpty}
@@ -131,10 +171,16 @@ export function Game({
 
           {topCard ? (
             <div className="flex flex-col gap-2">
-              <PlayingCard
-                category={topCard.category}
-                symbol={`/symbols/${topCard.cardSymbol}.svg`}
-              />
+              <div onPointerDown={(e) => onCardPointerDown(e, setCardDrag)} style={{ touchAction: "none" }}>
+                <PlayingCard
+                  category={topCard.category}
+                  symbol={`symbols/${topCard.cardSymbol}.svg`}
+                  style={{
+                    transform: `translate(${cardDrag.active ? cardDrag.x - cardDrag.startX : 0}px, ${cardDrag.active ? cardDrag.y - cardDrag.startY : 0}px)`,
+                    transition: cardDrag.active ? "none" : "transform 200ms ease",
+                  }}
+                />
+              </div>
               <div className="flex justify-center w-full">{quitButtons()}</div>
             </div>
           ) : (
@@ -143,6 +189,17 @@ export function Game({
               <div className="flex justify-center w-full">{quitButtons()}</div>
             </div>
           )}
+
+          {/* spawn-from-top temporary card that follows pointer */}
+          {spawnDrag.active && drawnCard && (
+                <div style={{ position: "fixed", left: spawnDrag.x, top: spawnDrag.y, transform: "translate(-50%,-50%)", zIndex: 60, pointerEvents: "none" }}>
+                  <PlayingCard
+                    category={drawnCard.category}
+                    symbol={`symbols/${drawnCard.cardSymbol}.svg`}
+                  />
+                </div>
+              )
+            }
 
           <Button onClick={addPoint} className="" size="icon" variant="outline">
             <Trophy />
