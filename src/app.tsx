@@ -37,6 +37,8 @@ export function App() {
           <Results
             toMenu={() => setCurrentPage("menu")}
             playerState={playerState}
+            setPlayerState={setPlayerState}
+            setPlayerDeck={setPlayerDeck}
           />
         );
       default:
