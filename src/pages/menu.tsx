@@ -32,11 +32,11 @@ export function Menu({
   }
 
   function randomizeSeed() {
-    handleSeed(Math.round(random() * 1_000_000));
+    handleSeed(Math.round(random() * 899_999 + 100_000));
   }
 
   useEffect(() => {
-    handleSeed(1);
+    randomizeSeed();
   }, []);
 
   useEffect(() => {
@@ -104,7 +104,7 @@ export function Menu({
             </FieldLabel>
             <div className="flex items-center gap-2">
               <Input
-                className="max-w-28"
+                className="max-w-32 text-xl"
                 value={seed}
                 onChange={(e) => handleSeed(Number(e.currentTarget.value))}
                 id="input-seed"
