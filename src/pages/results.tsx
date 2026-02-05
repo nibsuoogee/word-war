@@ -1,25 +1,14 @@
 import { Button } from "@/components/ui/button";
-import type { Deck, PlayerState } from "@/types";
+import type { PlayerState } from "@/types";
 import { BookOpenText } from "lucide-react";
-import type { Dispatch, StateUpdater } from "preact/hooks";
 
 export function Results({
-  toMenu,
+  resetGame,
   playerState,
-  setPlayerState,
-  setPlayerDeck,
 }: {
-  toMenu: () => void;
+  resetGame: () => void;
   playerState: PlayerState;
-  setPlayerState: Dispatch<StateUpdater<PlayerState>>;
-  setPlayerDeck: Dispatch<StateUpdater<Deck>>;
 }) {
-  function handleReset() {
-    setPlayerState({ points: 0, physicalDeck: [], virtualDeckPosition: 0 });
-    setPlayerDeck({ cards: [] });
-    toMenu();
-  }
-
   return (
     <>
       <div className="flex flex-col items-center gap-4 w-full">
@@ -27,7 +16,7 @@ export function Results({
 
         <p className="text-3xl">{playerState.points} points</p>
 
-        <Button onClick={handleReset} className="" variant="outline">
+        <Button onClick={resetGame} className="" variant="outline">
           <BookOpenText />
           Back to menu
         </Button>
