@@ -14,6 +14,12 @@ export function App() {
     virtualDeckPosition: 0,
   });
 
+  function resetGame() {
+    setPlayerState({ points: 0, physicalDeck: [], virtualDeckPosition: 0 });
+    setPlayerDeck({ cards: [] });
+    setCurrentPage("menu");
+  }
+
   function showPage() {
     switch (currentPage) {
       case "menu":
@@ -33,14 +39,7 @@ export function App() {
           />
         );
       case "results":
-        return (
-          <Results
-            toMenu={() => setCurrentPage("menu")}
-            playerState={playerState}
-            setPlayerState={setPlayerState}
-            setPlayerDeck={setPlayerDeck}
-          />
-        );
+        return <Results resetGame={resetGame} playerState={playerState} />;
       default:
         return <></>;
     }
