@@ -2,12 +2,27 @@ import type { Dispatch, StateUpdater } from "preact/hooks";
 import type { PlayerState } from "./types";
 
 
-export function onPointerUp(e: PointerEvent, cardDrag: { active: boolean; startX: number; startY: number; x: number; y: number; }, setCardDrag: Dispatch<{ active: boolean; startX: number; startY: number; x: number; y: number; }>, spawnDrag: { active: boolean; startX: number; startY: number; x: number; y: number; }, setSpawnDrag: Dispatch<{ active: boolean; startX: number; startY: number; x: number; y: number; }>, removeTopCard: () => void, addPoint: () => void, nextCard: () => void, containerRef: { current: HTMLDivElement | null }, setPlayerState: Dispatch<StateUpdater<PlayerState>>) {
+export function onSpawnPointerUp(e: PointerEvent, spawnDrag: { active: boolean; startX: number; startY: number; x: number; y: number; }, setSpawnDrag: Dispatch<{ active: boolean; startX: number; startY: number; x: number; y: number; }>, removeTopCard: () => void, addPoint: () => void, nextCard: () => void, containerRef: { current: HTMLDivElement | null }) {
     const rect = containerRef.current?.getBoundingClientRect();
     const releaseX = e.clientX - (rect?.left ?? 0);
     const releaseY = e.clientY - (rect?.top ?? 0);
     const width = rect?.width ?? window.innerWidth;
     const height = rect?.height ?? window.innerHeight;
+
+    // finish spawn drag (dragging from top)
+    if (spawnDrag.active) {
+        setSpawnDrag((d) => ({ ...d, active: false }));
+    // if released near left/right edges trigger actions, otherwise add card if dragged downward enough
+    if (releaseX < width * 0.25) removeTopCard();
+    else if (releaseX > width * 0.75) addPoint();
+    else if (releaseY > height * 0.15) nextCard();
+    }
+}
+
+export function onPointerUp(e: PointerEvent, cardDrag: { active: boolean; startX: number; startY: number; x: number; y: number; }, setCardDrag: Dispatch<{ active: boolean; startX: number; startY: number; x: number; y: number; }>, spawnDrag: { active: boolean; startX: number; startY: number; x: number; y: number; }, setSpawnDrag: Dispatch<{ active: boolean; startX: number; startY: number; x: number; y: number; }>, removeTopCard: () => void, addPoint: () => void, nextCard: () => void, containerRef: { current: HTMLDivElement | null }, setPlayerState: Dispatch<StateUpdater<PlayerState>>) {
+    const rect = containerRef.current?.getBoundingClientRect();
+    const releaseX = e.clientX - (rect?.left ?? 0);
+    const width = rect?.width ?? window.innerWidth;
 
     // finish card drag
     if (cardDrag.active) {
@@ -17,15 +32,6 @@ export function onPointerUp(e: PointerEvent, cardDrag: { active: boolean; startX
         setPlayerState((prev) => ({ ...prev, virtualDeckPosition: prev.virtualDeckPosition + 1 }));
     } else if (releaseX > width * 0.75) addPoint();
     // else snap back (no action)
-    }
-
-    // finish spawn drag (dragging from top)
-    if (spawnDrag.active) {
-        setSpawnDrag((d) => ({ ...d, active: false }));
-    // if released near left/right edges trigger actions, otherwise add card if dragged downward enough
-    if (releaseX < width * 0.25) removeTopCard();
-    else if (releaseX > width * 0.75) addPoint();
-    else if (releaseY > height * 0.15) nextCard();
     }
 }
 

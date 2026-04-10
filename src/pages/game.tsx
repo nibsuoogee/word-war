@@ -9,7 +9,7 @@ import {
   type Dispatch,
   type StateUpdater,
 } from "preact/hooks";
-import { onPointerUp, onCardPointerDown, onTopPointerDown, onPointerMove } from "@/utils";
+import { onPointerUp, onSpawnPointerUp, onCardPointerDown, onTopPointerDown, onPointerMove } from "@/utils";
 
 export function Game({
   quit,
@@ -49,12 +49,18 @@ export function Game({
 
     if (cardDrag.active || spawnDrag.active) {
       window.addEventListener("pointermove", (e) => onPointerMove(e, cardDrag, setCardDrag, spawnDrag, setSpawnDrag));
-      window.addEventListener("pointerup", (e) => onPointerUp(e, cardDrag, setCardDrag, spawnDrag, setSpawnDrag, removeTopCard, addPoint, nextCard, containerRef, setPlayerState));
+      if (cardDrag.active) {
+        window.addEventListener("pointerup", (e) => onPointerUp(e, cardDrag, setCardDrag, spawnDrag, setSpawnDrag, removeTopCard, addPoint, nextCard, containerRef, setPlayerState));
+      }
+      if (spawnDrag.active) {
+        window.addEventListener("pointerup", (e) => onSpawnPointerUp(e, spawnDrag, setSpawnDrag, removeTopCard, addPoint, nextCard, containerRef))
+      }
     }
 
     return () => {
       window.removeEventListener("pointermove", (e) => onPointerMove(e, cardDrag, setCardDrag, spawnDrag, setSpawnDrag));
       window.removeEventListener("pointerup", (e) => onPointerUp(e, cardDrag, setCardDrag, spawnDrag, setSpawnDrag, removeTopCard, addPoint, nextCard, containerRef, setPlayerState));
+      window.removeEventListener("pointerup", (e) => onSpawnPointerUp(e, spawnDrag, setSpawnDrag, removeTopCard, addPoint, nextCard, containerRef));
     };
   }, [cardDrag.active, spawnDrag.active]);
 
