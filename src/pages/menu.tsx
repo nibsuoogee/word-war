@@ -4,7 +4,8 @@ import "../app.css";
 import { Button } from "../components/ui/button";
 import { Field, FieldLabel } from "../components/ui/field";
 import { Input } from "../components/ui/input";
-import { categories } from "../data/cards";
+import { categoryPacks, DEFAULT_PACK_KEY } from "../data/packs";
+import { PackSelect } from "../components/ui/packSelect";
 import { arrayShuffle, mulberry32 } from "../lib/random";
 import { cardSymbol, type Card, type CardSymbol, type Deck } from "../types";
 
@@ -23,6 +24,7 @@ export function Menu({
   const [playerCount, setPlayerCount] = useState<number>(3);
   const [playerPosition, setPlayerPosition] = useState<number>(0);
   const [deck, setDeck] = useState<Deck>({ cards: [] });
+  const [selectedPackKeys, setSelectedPackKeys] = useState<string[]>([DEFAULT_PACK_KEY]);
 
   const symbolRandom = mulberry32(SYMBOL_SEED);
   const random = mulberry32(seed);
@@ -41,7 +43,7 @@ export function Menu({
 
   useEffect(() => {
     createDeck();
-  }, [seed]);
+  }, [seed, selectedPackKeys]);
 
   function changePlayerCount(delta: number) {
     if (playerCount < 4 && delta < 0) return;
@@ -68,7 +70,10 @@ export function Menu({
   }
 
   function createDeck() {
-    const newCards: Card[] = categories.map((category) => ({
+    const merged = [
+      ...new Set(selectedPackKeys.flatMap((key) => categoryPacks[key].categories)),
+    ];
+    const newCards: Card[] = merged.map((category) => ({
       category,
       cardSymbol: getSymbol(),
     }));
@@ -96,6 +101,11 @@ export function Menu({
     <>
       <div className="flex flex-col items-center gap-4">
         <h1 className="text-3xl">Word War</h1>
+
+        <Field>
+          <FieldLabel className="justify-center">Category Pack</FieldLabel>
+          <PackSelect selectedKeys={selectedPackKeys} onChange={setSelectedPackKeys} />
+        </Field>
 
         <div className="flex items-end gap-2">
           <Field>

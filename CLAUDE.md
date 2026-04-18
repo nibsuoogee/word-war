@@ -33,7 +33,7 @@ All types are defined with Zod schemas and inferred from them:
 
 ### Data
 
-- `src/data/cards.ts` — flat array of category strings (the word prompts)
+- `src/data/packs.ts` — named category packs (`CategoryPack` type); `categoryPacks` record holds 6 packs (standard, popCulture, nerd, world, sports, nature); `DEFAULT_PACK_KEY = "standard"`
 - Symbol assignment is randomized per-card using a fixed seed (`SYMBOL_SEED = 1234`), separate from the game seed, so symbols are consistent across reruns
 
 ### UI
