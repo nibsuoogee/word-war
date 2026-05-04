@@ -293,15 +293,24 @@ export function Game({
         )}
       </div>
 
-      {/* Play area with zones */}
-      <div className="play-area">
-        {/* Left zone — lost point */}
-        <div
-          className={`zone-indicator zone-left ${activeZone === "left" ? "zone-active" : ""}`}
-        >
-          <X className="w-8 h-8" />
-        </div>
+      {/* Drag overlay panels — visible while a drag is in progress */}
+      {ghostCard !== null && (
+        <>
+          <div
+            className={`zone-overlay zone-overlay-left${activeZone === "left" ? " zone-overlay-active" : ""}`}
+          >
+            <X className="w-12 h-12" />
+          </div>
+          <div
+            className={`zone-overlay zone-overlay-right${activeZone === "right" ? " zone-overlay-active" : ""}`}
+          >
+            <Trophy className="w-12 h-12" />
+          </div>
+        </>
+      )}
 
+      {/* Play area */}
+      <div className="play-area">
         {/* Card pile */}
         <div
           ref={pileRef}
@@ -318,13 +327,6 @@ export function Game({
           ) : (
             <div className="playing-card opacity-20" />
           )}
-        </div>
-
-        {/* Right zone — won point */}
-        <div
-          className={`zone-indicator zone-right ${activeZone === "right" ? "zone-active" : ""}`}
-        >
-          <Trophy className="w-8 h-8" />
         </div>
       </div>
 
