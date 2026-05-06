@@ -314,6 +314,12 @@ export function Game({
         )}
       </div>
 
+      {/* Score display */}
+      <div className="score-display">
+        <Trophy className="w-4 h-4" />
+        <span>{playerState.points}</span>
+      </div>
+
       {/* Drag overlay panels — visible while a drag is in progress */}
       {ghostCard !== null && (
         <>
