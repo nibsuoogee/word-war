@@ -8,6 +8,11 @@
   touch-action: none;
   user-select: none;
   overflow: hidden;
+  /* Scale card down on small viewports so it fits within the available vertical
+     and horizontal space, keeping the quit area always visible. The formula
+     derives a max card width from the remaining height after deducting all
+     fixed chrome (padding + gaps + draw-zone + quit-area ≈ 11 rem). */
+  --card-width: min(300px, 80vw, calc((100dvh - 11rem) * 5 / 7));
 }
 
 .draw-zone {
@@ -40,7 +45,9 @@
   align-items: center;
   justify-content: center;
   flex: 1;
+  min-height: 0;
   width: 100%;
+  overflow: hidden;
 }
 
 .zone-overlay {
@@ -103,4 +110,6 @@
   width: 100%;
   gap: 0.5rem;
   padding-bottom: 1rem;
+  flex-shrink: 0;
+  min-height: 3rem;
 }
