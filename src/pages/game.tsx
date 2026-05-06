@@ -1,6 +1,6 @@
 import { PlayingCard } from "@/components/playingCard/playingCard";
 import { Button } from "@/components/ui/button";
-import type { Card, Deck, PlayerState } from "@/types";
+import { cardSymbol, type Card, type Deck, type PlayerState } from "@/types";
 import { ArrowDown, ArrowLeft, Play, Trophy, X } from "lucide-react";
 import {
   useEffect,
@@ -268,6 +268,14 @@ export function Game({
         return <></>;
     }
   }
+
+  // Preload all symbol SVGs on mount to prevent flicker
+  useEffect(() => {
+    cardSymbol.options.forEach((symbol) => {
+      const img = new Image();
+      img.src = `/symbols/${symbol}.svg`;
+    });
+  }, []);
 
   // Derived state effects
   useEffect(() => {
