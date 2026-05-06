@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Dice3, Swords } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowRight, BookOpen, Dice3, Swords, Trophy, X } from "lucide-react";
 import { useEffect, useState } from "preact/hooks";
 import "../app.css";
 import { Button } from "../components/ui/button";
@@ -25,6 +25,7 @@ export function Menu({
   const [playerPosition, setPlayerPosition] = useState<number>(0);
   const [deck, setDeck] = useState<Deck>({ cards: [] });
   const [selectedPackKeys, setSelectedPackKeys] = useState<string[]>([DEFAULT_PACK_KEY]);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   const symbolRandom = mulberry32(SYMBOL_SEED);
   const random = mulberry32(seed);
@@ -184,10 +185,57 @@ export function Menu({
           </Field>
         </div>
 
-        <Button onClick={handleStart} className="w-min" variant="outline">
-          Start <Swords />
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={handleStart} className="w-min" variant="outline">
+            Start <Swords />
+          </Button>
+          <Button onClick={() => setShowInstructions(true)} variant="ghost" size="icon" aria-label="View instructions">
+            <BookOpen />
+          </Button>
+        </div>
       </div>
+
+      {/* How-to-play overlay */}
+      {showInstructions && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background p-8 gap-8">
+          <h1 className="text-2xl font-bold">How to play</h1>
+
+          <ol className="flex flex-col gap-5 w-full max-w-sm">
+            <li className="flex gap-3 items-start">
+              <ArrowDown className="w-5 h-5 mt-0.5 shrink-0" />
+              <span>
+                <strong>Draw</strong> a card to reveal a category. Read it
+                aloud to your team.
+              </span>
+            </li>
+            <li className="flex gap-3 items-start">
+              <Trophy className="w-5 h-5 mt-0.5 shrink-0 text-green-500" />
+              <span>
+                Drag the card <strong>right</strong> if the team guesses
+                correctly — your score goes up.
+              </span>
+            </li>
+            <li className="flex gap-3 items-start">
+              <X className="w-5 h-5 mt-0.5 shrink-0 text-red-500" />
+              <span>
+                Drag the card <strong>left</strong> if they don't — the card is
+                discarded.
+              </span>
+            </li>
+            <li className="flex gap-3 items-start">
+              <ArrowLeft className="w-5 h-5 mt-0.5 shrink-0" />
+              <span>
+                Drag back to <strong>center</strong> to undo if you made a
+                mistake.
+              </span>
+            </li>
+          </ol>
+
+          <Button size="lg" variant="outline" onClick={() => setShowInstructions(false)}>
+            Got it
+          </Button>
+        </div>
+      )}
     </>
   );
 }

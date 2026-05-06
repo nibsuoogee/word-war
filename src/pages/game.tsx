@@ -25,7 +25,6 @@ export function Game({
   playerState: PlayerState;
   setPlayerState: Dispatch<StateUpdater<PlayerState>>;
 }) {
-  const [showInstructions, setShowInstructions] = useState(true);
   const [quitDialogOpen, setQuitDialogOpen] = useState(false);
   const [virtualDeckEmpty, setVirtualDeckEmpty] = useState(false);
 
@@ -351,48 +350,6 @@ export function Game({
           />
         )}
       </div>
-
-      {/* How-to-play overlay — shown once at the start of each game session */}
-      {showInstructions && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background p-8 gap-8">
-          <h1 className="text-2xl font-bold">How to play</h1>
-
-          <ol className="flex flex-col gap-5 w-full max-w-sm">
-            <li className="flex gap-3 items-start">
-              <ArrowDown className="w-5 h-5 mt-0.5 shrink-0" />
-              <span>
-                <strong>Draw</strong> a card to reveal a category. Read it
-                aloud to your team.
-              </span>
-            </li>
-            <li className="flex gap-3 items-start">
-              <Trophy className="w-5 h-5 mt-0.5 shrink-0 text-green-500" />
-              <span>
-                Drag the card <strong>right</strong> if the team guesses
-                correctly — your score goes up.
-              </span>
-            </li>
-            <li className="flex gap-3 items-start">
-              <X className="w-5 h-5 mt-0.5 shrink-0 text-red-500" />
-              <span>
-                Drag the card <strong>left</strong> if they don't — the card is
-                discarded.
-              </span>
-            </li>
-            <li className="flex gap-3 items-start">
-              <ArrowLeft className="w-5 h-5 mt-0.5 shrink-0" />
-              <span>
-                Drag back to <strong>center</strong> to undo if you made a
-                mistake.
-              </span>
-            </li>
-          </ol>
-
-          <Button size="lg" onClick={() => setShowInstructions(false)}>
-            Start playing
-          </Button>
-        </div>
-      )}
     </div>
   );
 }
