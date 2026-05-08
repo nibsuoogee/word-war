@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowLeft, ArrowRight, BookOpen, Dice3, Swords, Trophy, X } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowRight, BookOpen, Dice3, Swords, Trophy, Undo2, X } from "lucide-react";
 import { useEffect, useState } from "preact/hooks";
 import "../app.css";
 import { Button } from "../components/ui/button";
@@ -222,7 +222,7 @@ export function Menu({
               </span>
             </li>
             <li className="flex gap-3 items-start">
-              <ArrowLeft className="w-5 h-5 mt-0.5 shrink-0" />
+              <Undo2 className="w-5 h-5 mt-0.5 shrink-0" />
               <span>
                 Press <strong>undo</strong> (you can only undo one action) if
                 you made a mistake.
