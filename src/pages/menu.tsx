@@ -185,7 +185,7 @@ export function Menu({
           </Field>
         </div>
 
-        <Button onClick={() => setShowInstructions(true)} variant="ghost" aria-label="View instructions">
+        <Button onClick={() => setShowInstructions(true)} variant="ghost">
           <BookOpen /> How to play
         </Button>
 
