@@ -203,29 +203,29 @@ export function Menu({
             <li className="flex gap-3 items-start">
               <ArrowDown className="w-5 h-5 mt-0.5 shrink-0" />
               <span>
-                <strong>Draw</strong> a card to reveal a category. Read it
-                aloud to your team.
+                Draw a card to reveal a category. Read it out aloud to other
+                players.
               </span>
             </li>
             <li className="flex gap-3 items-start">
               <Trophy className="w-5 h-5 mt-0.5 shrink-0 text-green-500" />
               <span>
-                Drag the card <strong>right</strong> if the team guesses
-                correctly — your score goes up.
+                Drag the card <strong>right</strong> if you won against another
+                player in word battle — your score goes up.
               </span>
             </li>
             <li className="flex gap-3 items-start">
               <X className="w-5 h-5 mt-0.5 shrink-0 text-red-500" />
               <span>
-                Drag the card <strong>left</strong> if they don't — the card is
-                discarded.
+                Drag the card <strong>left</strong> if you lost in word battle —
+                the card is discarded.
               </span>
             </li>
             <li className="flex gap-3 items-start">
               <ArrowLeft className="w-5 h-5 mt-0.5 shrink-0" />
               <span>
-                Drag back to <strong>center</strong> to undo if you made a
-                mistake.
+                Press <strong>undo</strong> (you can only undo one action) if
+                you made a mistake.
               </span>
             </li>
           </ol>
