@@ -185,14 +185,13 @@ export function Menu({
           </Field>
         </div>
 
-        <div className="flex gap-2">
-          <Button onClick={handleStart} className="w-min" variant="outline">
-            Start <Swords />
-          </Button>
-          <Button onClick={() => setShowInstructions(true)} variant="ghost" size="icon" aria-label="View instructions">
-            <BookOpen />
-          </Button>
-        </div>
+        <Button onClick={() => setShowInstructions(true)} variant="ghost" aria-label="View instructions">
+          <BookOpen /> How to play
+        </Button>
+
+        <Button onClick={handleStart} className="w-min" variant="outline">
+          Start <Swords />
+        </Button>
       </div>
 
       {/* How-to-play overlay */}
