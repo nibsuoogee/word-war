@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowLeft, ArrowRight, BookOpen, Dice3, Swords, Trophy, Undo2, X } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowRight, BookOpen, Dice3, Share2, Swords, Trophy, Undo2, X } from "lucide-react";
 import { useEffect, useState } from "preact/hooks";
 import "../app.css";
 import { Button } from "../components/ui/button";
@@ -25,6 +25,7 @@ export function Menu({
   const [playerPosition, setPlayerPosition] = useState<number>(0);
   const [deck, setDeck] = useState<Deck>({ cards: [] });
   const [selectedPackKeys, setSelectedPackKeys] = useState<string[]>([DEFAULT_PACK_KEY]);
+  const [copied, setCopied] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
 
   const symbolRandom = mulberry32(SYMBOL_SEED);
@@ -39,7 +40,35 @@ export function Menu({
   }
 
   useEffect(() => {
-    randomizeSeed();
+    const params = new URLSearchParams(window.location.search);
+    const urlSeed = params.get("seed");
+    const urlPlayers = params.get("players");
+    const urlPacks = params.get("packs");
+
+    if (urlSeed !== null) {
+      const parsedSeed = Number(urlSeed);
+      if (!isNaN(parsedSeed) && isFinite(parsedSeed)) {
+        setSeed(parsedSeed);
+      } else {
+        randomizeSeed();
+      }
+    } else {
+      randomizeSeed();
+    }
+
+    if (urlPlayers !== null) {
+      const count = Number(urlPlayers);
+      if (count >= MIN_PLAYERS && count <= MAX_PLAYERS) {
+        setPlayerCount(count);
+      }
+    }
+
+    if (urlPacks !== null) {
+      const packKeys = urlPacks.split(",").filter((k) => k in categoryPacks);
+      if (packKeys.length > 0) {
+        setSelectedPackKeys(packKeys);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -96,6 +125,22 @@ export function Menu({
 
   function handleStart() {
     startGame();
+  }
+
+  async function shareConfig() {
+    const params = new URLSearchParams();
+    params.set("seed", String(seed));
+    params.set("players", String(playerCount));
+    params.set("packs", selectedPackKeys.join(","));
+
+    const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // clipboard write failed (e.g. no HTTPS or permission denied)
+    }
   }
 
   return (
@@ -192,7 +237,19 @@ export function Menu({
         <Button onClick={handleStart} className="w-min" variant="outline">
           Start <Swords />
         </Button>
+        <Button onClick={shareConfig} className="w-min" variant="outline">
+          Share <Share2 />
+        </Button>
       </div>
+      {copied && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 rounded-md bg-foreground px-4 py-2 text-sm text-background shadow-md"
+        >
+          Link copied!
+        </div>
+      )}
 
       {/* How-to-play overlay */}
       {showInstructions && (
