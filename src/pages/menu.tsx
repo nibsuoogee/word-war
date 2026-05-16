@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Dice3, Share2, Swords } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowRight, BookOpen, Dice3, Share2, Swords, Trophy, Undo2, X } from "lucide-react";
 import { useEffect, useState } from "preact/hooks";
 import "../app.css";
 import { Button } from "../components/ui/button";
@@ -26,6 +26,7 @@ export function Menu({
   const [deck, setDeck] = useState<Deck>({ cards: [] });
   const [selectedPackKeys, setSelectedPackKeys] = useState<string[]>([DEFAULT_PACK_KEY]);
   const [copied, setCopied] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   const symbolRandom = mulberry32(SYMBOL_SEED);
   const random = mulberry32(seed);
@@ -229,6 +230,10 @@ export function Menu({
           </Field>
         </div>
 
+        <Button onClick={() => setShowInstructions(true)} variant="ghost">
+          <BookOpen /> How to play
+        </Button>
+
         <Button onClick={handleStart} className="w-min" variant="outline">
           Start <Swords />
         </Button>
@@ -243,6 +248,48 @@ export function Menu({
           className="fixed bottom-6 left-1/2 -translate-x-1/2 rounded-md bg-foreground px-4 py-2 text-sm text-background shadow-md"
         >
           Link copied!
+        </div>
+      )}
+
+      {/* How-to-play overlay */}
+      {showInstructions && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background p-8 gap-8">
+          <h1 className="text-2xl font-bold">How to play</h1>
+
+          <ol className="flex flex-col gap-5 w-full max-w-sm">
+            <li className="flex gap-3 items-start">
+              <ArrowDown className="w-5 h-5 mt-0.5 shrink-0" />
+              <span>
+                Draw a card to reveal a category. Read it out aloud to other
+                players.
+              </span>
+            </li>
+            <li className="flex gap-3 items-start">
+              <Trophy className="w-5 h-5 mt-0.5 shrink-0 text-green-500" />
+              <span>
+                Drag the card <strong>right</strong> if you won against another
+                player in word battle — your score goes up.
+              </span>
+            </li>
+            <li className="flex gap-3 items-start">
+              <X className="w-5 h-5 mt-0.5 shrink-0 text-red-500" />
+              <span>
+                Drag the card <strong>left</strong> if you lost in word battle —
+                the card is discarded.
+              </span>
+            </li>
+            <li className="flex gap-3 items-start">
+              <Undo2 className="w-5 h-5 mt-0.5 shrink-0" />
+              <span>
+                Press <strong>undo</strong> (you can only undo one action) if
+                you made a mistake.
+              </span>
+            </li>
+          </ol>
+
+          <Button size="lg" variant="outline" onClick={() => setShowInstructions(false)}>
+            Got it
+          </Button>
         </div>
       )}
     </>

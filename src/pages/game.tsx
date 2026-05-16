@@ -1,7 +1,7 @@
 import { PlayingCard } from "@/components/playingCard/playingCard";
 import { Button } from "@/components/ui/button";
 import { cardSymbol, type Card, type Deck, type PlayerState } from "@/types";
-import { ArrowDown, ArrowLeft, Play, Trophy, X } from "lucide-react";
+import { ArrowDown, ArrowLeft, Play, Trophy, Undo2, X } from "lucide-react";
 import {
   useEffect,
   useRef,
@@ -27,6 +27,9 @@ export function Game({
 }) {
   const [quitDialogOpen, setQuitDialogOpen] = useState(false);
   const [virtualDeckEmpty, setVirtualDeckEmpty] = useState(false);
+  const [lastPlayerState, setLastPlayerState] = useState<PlayerState | null>(
+    null,
+  );
 
   // Drag state
   const [ghostCard, setGhostCard] = useState<Card | null>(null);
@@ -66,6 +69,12 @@ export function Game({
       ...prev,
       physicalDeck: prev.physicalDeck.slice(0, -1),
     }));
+  }
+
+  function undo() {
+    if (!lastPlayerState) return;
+    setPlayerState(lastPlayerState);
+    setLastPlayerState(null);
   }
 
   // Pile center for snap animations
@@ -178,6 +187,7 @@ export function Game({
 
       if (src === "deck") {
         // New card always goes to center pile
+        setLastPlayerState(playerState);
         animateTo(center.x, center.y, 1, 1, () => {
           nextCard();
           // Wait one frame so the pile re-renders with the new card
@@ -188,12 +198,14 @@ export function Game({
         // Pile card: check which zone
         if (clientX < w * 0.33) {
           // Lost point — animate offscreen left
+          setLastPlayerState(playerState);
           animateTo(-200, center.y, 0.5, 0, () => {
             removeTopCard();
             cleanupDrag();
           });
         } else if (clientX > w * 0.67) {
           // Won point — animate offscreen right
+          setLastPlayerState(playerState);
           animateTo(w + 200, center.y, 0.5, 0, () => {
             addPoint();
             removeTopCard();
@@ -213,6 +225,7 @@ export function Game({
       // Treat cancel as snap-back
       const center = getPileCenter();
       if (dragRef.current?.source === "deck") {
+        setLastPlayerState(playerState);
         animateTo(center.x, center.y, 1, 1, () => {
           nextCard();
           requestAnimationFrame(() => cleanupDrag());
@@ -279,10 +292,10 @@ export function Game({
 
   // Derived state effects
   useEffect(() => {
-    if (playerState.virtualDeckPosition >= playerDeck.cards.length) {
-      setVirtualDeckEmpty(true);
-    }
-  }, [playerState.virtualDeckPosition]);
+    setVirtualDeckEmpty(
+      playerState.virtualDeckPosition >= playerDeck.cards.length,
+    );
+  }, [playerState.virtualDeckPosition, playerDeck.cards.length]);
 
   return (
     <div className="game-area">
@@ -299,6 +312,12 @@ export function Game({
             <span>Draw</span>
           </>
         )}
+      </div>
+
+      {/* Score display */}
+      <div className="score-display">
+        <Trophy className="w-4 h-4" />
+        <span>{playerState.points}</span>
       </div>
 
       {/* Drag overlay panels — visible while a drag is in progress */}
@@ -339,7 +358,13 @@ export function Game({
       </div>
 
       {/* Quit buttons */}
-      <div className="quit-area">{quitButtons()}</div>
+      <div className="quit-area">
+        <Button onClick={undo} variant="outline" disabled={!lastPlayerState}>
+          <Undo2 />
+          Undo
+        </Button>
+        {quitButtons()}
+      </div>
 
       {/* Ghost card — follows pointer during drag */}
       <div ref={ghostRef} className="drag-ghost">
