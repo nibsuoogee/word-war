@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Dice3, Link, Swords } from "lucide-react";
+import { ArrowLeft, ArrowRight, Dice3, Share2, Swords } from "lucide-react";
 import { useEffect, useState } from "preact/hooks";
 import "../app.css";
 import { Button } from "../components/ui/button";
@@ -169,9 +169,6 @@ export function Menu({
               <Button onClick={randomizeSeed} variant="outline" size="icon">
                 <Dice3 />
               </Button>
-              <Button onClick={shareConfig} variant="outline" size="icon" title="Copy share link">
-                <Link />
-              </Button>
             </div>
           </Field>
         </div>
@@ -234,6 +231,9 @@ export function Menu({
 
         <Button onClick={handleStart} className="w-min" variant="outline">
           Start <Swords />
+        </Button>
+        <Button onClick={shareConfig} className="w-min" variant="outline">
+          Share <Share2 />
         </Button>
       </div>
       {copied && (
